@@ -1,0 +1,16 @@
+node_modules
+dist
+.wrangler
+coverage
+.DS_Store
+.turbo
+.codex/
+.env
+.env.*
+!.env.example
+*.tsbuildinfo
+*.backup
+AGENTS.md
+.agents/
+.memories/
+docs/

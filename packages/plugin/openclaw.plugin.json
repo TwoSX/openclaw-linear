@@ -1,0 +1,12 @@
+{
+  "id": "linear",
+  "name": "OpenClaw Linear",
+  "description": "Linear Agent Session bridge for OpenClaw.",
+  "version": "0.1.0",
+  "channels": ["linear"],
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {}
+  }
+}

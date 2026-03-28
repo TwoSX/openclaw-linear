@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "skills": {
+    "cloudflare": {
+      "source": "cloudflare/skills",
+      "sourceType": "github",
+      "computedHash": "02ef72b4906d295d03da15d52357babdef06a762f0374b85c89c73c9b22a7bad"
+    },
+    "code-simplification": {
+      "source": "sammcj/agentic-coding",
+      "sourceType": "github",
+      "computedHash": "67d0214cd8fc9c669037d8e5a1f38cde5512bfb50cc8ce7ffe348e4c098c873a"
+    },
+    "durable-objects": {
+      "source": "cloudflare/skills",
+      "sourceType": "github",
+      "computedHash": "72efa2277fea08f43b393c74abaacc9fa575e20bc63bdc9d46829b8a39352852"
+    }
+  }
+}

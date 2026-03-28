@@ -1,0 +1,75 @@
+{
+  "name": "openclaw-channel-linear",
+  "version": "0.1.0",
+  "type": "module",
+  "license": "MIT",
+  "main": "dist/packages/plugin/index.js",
+  "types": "dist/packages/plugin/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/packages/plugin/index.d.ts",
+      "default": "./dist/packages/plugin/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "openclaw.plugin.json",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/twosx/openclaw-linear.git"
+  },
+  "bugs": {
+    "url": "https://github.com/twosx/openclaw-linear/issues"
+  },
+  "homepage": "https://github.com/twosx/openclaw-linear#readme",
+  "keywords": [
+    "openclaw",
+    "linear",
+    "channel",
+    "plugin",
+    "agent"
+  ],
+  "openclaw": {
+    "extensions": ["./dist/packages/plugin/index.js"],
+    "setupEntry": "./dist/packages/plugin/setup-entry.js",
+    "startup": {
+      "deferConfiguredChannelFullLoadUntilAfterListen": true
+    },
+    "channel": {
+      "id": "linear",
+      "label": "Linear",
+      "selectionLabel": "Linear Agent Channel",
+      "detailLabel": "Linear",
+      "docsPath": "/plugins/sdk-channel-plugins",
+      "docsLabel": "linear",
+      "blurb": "Linear Agent Session bridge via Cloudflare Worker and Durable Objects.",
+      "order": 75
+    }
+  },
+  "scripts": {
+    "build": "rm -rf dist && tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run --passWithNoTests --exclude \"dist/**\"",
+    "lint": "tsc -p tsconfig.json --noEmit",
+    "prepack": "pnpm run build"
+  },
+  "dependencies": {
+    "ws": "^8.20.0",
+    "zod": "^4.3.6"
+  },
+  "peerDependencies": {
+    "openclaw": ">=2026.3.24 <2027"
+  },
+  "peerDependenciesMeta": {
+    "openclaw": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/ws": "^8.18.1",
+    "openclaw": "2026.3.24"
+  }
+}
