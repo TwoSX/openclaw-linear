@@ -414,7 +414,9 @@ function extractToolResultText(message: unknown): string | null {
     text?: string;
     content?: unknown;
   };
-  const text = normalizeText(candidate.text ?? "") || extractTextContent(candidate.content);
+  const text =
+    normalizeInlineText(candidate.text ?? "") ||
+    extractInlineTextContent(candidate.content);
   if (!text) {
     return null;
   }
@@ -459,7 +461,7 @@ function extractPendingToolCalls(value: unknown): PendingToolCall[] {
         } | null;
       };
 
-      const name = normalizeText(
+      const name = normalizeInlineText(
         candidate.name ??
           candidate.toolName ??
           candidate.tool_name ??
@@ -644,13 +646,13 @@ function extractAssistantText(message: unknown): string | null {
   }
 
   if (typeof candidate.text === "string") {
-    const normalized = normalizeText(candidate.text);
+    const normalized = normalizeMarkdownText(candidate.text);
     if (normalized) {
       return normalized;
     }
   }
 
-  const contentText = extractTextContent(candidate.content);
+  const contentText = extractMarkdownTextContent(candidate.content);
   if (contentText) {
     return contentText;
   }
@@ -662,9 +664,9 @@ function extractAssistantText(message: unknown): string | null {
   return null;
 }
 
-function extractTextContent(value: unknown): string | null {
+function extractInlineTextContent(value: unknown): string | null {
   if (typeof value === "string") {
-    return normalizeText(value);
+    return normalizeInlineText(value);
   }
 
   if (!Array.isArray(value)) {
@@ -690,7 +692,7 @@ function extractTextContent(value: unknown): string | null {
         return "";
       }
 
-      return normalizeText(
+      return normalizeInlineText(
         part.text ?? part.output ?? part.content ?? part.result ?? part.summary ?? "",
       );
     })
@@ -703,8 +705,53 @@ function extractTextContent(value: unknown): string | null {
   return textParts.join("\n").trim();
 }
 
-function normalizeText(value: string): string {
+function extractMarkdownTextContent(value: unknown): string | null {
+  if (typeof value === "string") {
+    return normalizeMarkdownText(value);
+  }
+
+  if (!Array.isArray(value)) {
+    return null;
+  }
+
+  const textParts = value
+    .map((entry) => {
+      if (!entry || typeof entry !== "object") {
+        return "";
+      }
+
+      const part = entry as {
+        type?: string;
+        text?: string;
+        output?: string;
+        content?: string;
+        result?: string;
+        summary?: string;
+      };
+
+      if (part.type === "thinking") {
+        return "";
+      }
+
+      return normalizeMarkdownText(
+        part.text ?? part.output ?? part.content ?? part.result ?? part.summary ?? "",
+      );
+    })
+    .filter(Boolean);
+
+  if (textParts.length === 0) {
+    return null;
+  }
+
+  return textParts.join("\n").trim();
+}
+
+function normalizeInlineText(value: string): string {
   return value.replace(/\s+/g, " ").trim();
+}
+
+function normalizeMarkdownText(value: string): string {
+  return value.replace(/\r\n?/g, "\n").trim();
 }
 
 function createMessageFingerprint(message: unknown): string {

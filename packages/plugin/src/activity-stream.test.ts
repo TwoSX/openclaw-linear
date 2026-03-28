@@ -180,6 +180,36 @@ describe("activity-stream", () => {
     });
   });
 
+  it("preserves markdown line breaks in the final assistant response", () => {
+    const markdown = `查到了，当前团队情况是：
+
+**团队成员**
+
+- 成员 A（user-a）
+  - 角色：管理员
+  - 在线状态：Offline`;
+
+    const activity = buildTerminalActivity(
+      [
+        {
+          role: "assistant",
+          content: [
+            {
+              type: "text",
+              text: markdown,
+            },
+          ],
+        },
+      ],
+      createActivityStreamState(),
+    );
+
+    expect(activity).toEqual({
+      type: "response",
+      body: markdown,
+    });
+  });
+
   it("matches tool results by explicit toolCallId before FIFO fallback", () => {
     const messages = [
       {

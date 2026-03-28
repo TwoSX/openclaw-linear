@@ -316,6 +316,89 @@ describe("handleLinearGatewayEvent", () => {
     });
   });
 
+  it("preserves markdown formatting when writing the final Linear response", async () => {
+    const activityWriter = {
+      writeActivity: vi.fn().mockResolvedValue({
+        ok: true,
+      }),
+    };
+
+    const markdown = `查到了，当前团队情况是：
+
+**团队成员**
+
+- 成员 A（user-a）
+  - 角色：管理员
+  - 在线状态：Offline`;
+
+    const runtime = {
+      subagent: {
+        run: vi.fn().mockResolvedValue({
+          runId: "run-markdown",
+        }),
+        waitForRun: vi.fn().mockResolvedValue({
+          status: "ok",
+        }),
+        getSessionMessages: vi
+          .fn()
+          .mockResolvedValueOnce({
+            messages: [],
+          })
+          .mockResolvedValueOnce({
+            messages: [
+              {
+                role: "assistant",
+                content: [
+                  {
+                    type: "text",
+                    text: markdown,
+                  },
+                ],
+              },
+            ],
+          }),
+      },
+    };
+
+    const logger = {
+      error: vi.fn(),
+      warn: vi.fn(),
+      info: vi.fn(),
+      debug: vi.fn(),
+    };
+
+    await handleLinearGatewayEvent({
+      event: {
+        type: "webhook_event",
+        eventId: "evt-markdown",
+        timestamp: "2026-03-28T07:00:00.000Z",
+        payload: {
+          organizationId: "org-1",
+          eventType: "created",
+          agentSessionId: "session-markdown",
+          raw: {
+            promptContext: "Please summarize the team status with formatting.",
+            agentSession: {
+              id: "session-markdown",
+            },
+          },
+        },
+      },
+      activityWriter: activityWriter as never,
+      runtime: runtime as never,
+      logger: logger as never,
+    });
+
+    expect(activityWriter.writeActivity).toHaveBeenNthCalledWith(2, {
+      agentSessionId: "session-markdown",
+      clientGeneratedId: "evt-markdown:response",
+      content: {
+        type: "response",
+        body: markdown,
+      },
+    });
+  });
+
   it("applies a custom prompt context template for created events", async () => {
     const activityWriter = {
       writeActivity: vi.fn().mockResolvedValue({
